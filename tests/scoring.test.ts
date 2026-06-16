@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { jobByStatPair } from "@/lib/jobs";
+import { jobByStatPair, pairKey } from "@/lib/jobs";
 import {
   buildGeneratedSheet,
   calculateDecimalStats,
@@ -84,5 +84,42 @@ describe("scoring", () => {
 
       expect(getJobForDominantStats(getDominantStats(scores))).toBe(job);
     }
+  });
+
+  it("uses one scored adventure question for each job pair", () => {
+    const scoredQuestions = questions.filter((question) => question.primary && question.secondary);
+    const scoredPairs = scoredQuestions.map((question) =>
+      pairKey(question.primary as Stat, question.secondary as Stat),
+    );
+
+    expect(scoredQuestions).toHaveLength(15);
+    expect(new Set(scoredPairs)).toEqual(new Set(Object.keys(jobByStatPair)));
+  });
+
+  it("lets each scored question independently select its matching job", () => {
+    for (const question of questions.filter((item) => item.primary && item.secondary)) {
+      const singleStrongAnswer = answers(0);
+      singleStrongAnswer[question.id] = 4;
+
+      expect(buildGeneratedSheet(singleStrongAnswer, "female").job).toBe(
+        jobByStatPair[pairKey(question.primary as Stat, question.secondary as Stat)],
+      );
+    }
+  });
+
+  it("does not use reflection questions for stat scoring", () => {
+    const reflectionOnlyAnswers = answers(0);
+    for (const question of questions.filter((item) => !item.primary || !item.secondary)) {
+      reflectionOnlyAnswers[question.id] = 4;
+    }
+
+    expect(buildGeneratedSheet(reflectionOnlyAnswers, "male").roundedStats).toEqual({
+      INT: 5,
+      DEX: 5,
+      PER: 5,
+      TEC: 5,
+      VIT: 5,
+      CHA: 5,
+    });
   });
 });

@@ -28,10 +28,7 @@ export default function Home() {
           </div>
 
           <section aria-labelledby="sample-character-title">
-            <h2
-              id="sample-character-title"
-              className="mb-3 text-xl font-bold text-[#25303b]"
-            >
+            <h2 id="sample-character-title" className="mb-3 text-xl font-bold text-[#25303b]">
               ตัวอย่างตัวละคร
             </h2>
             <div className="overflow-hidden rounded-2xl border border-[#d8c9a6] bg-white p-3 shadow-sm">

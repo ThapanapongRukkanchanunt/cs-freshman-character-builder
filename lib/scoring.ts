@@ -18,9 +18,13 @@ export function calculateDecimalStats(answers: Record<string, AnswerValue>): Sta
   const rawScores = emptyScores();
 
   for (const question of questions) {
+    if (!question.primary || !question.secondary) {
+      continue;
+    }
+
     const value = answers[question.id] ?? 0;
-    rawScores[question.primary] += value * 0.7;
-    rawScores[question.secondary] += value * 0.3;
+    rawScores[question.primary] += value * 0.5;
+    rawScores[question.secondary] += value * 0.5;
   }
 
   const rawTotal = sumStats(rawScores);
